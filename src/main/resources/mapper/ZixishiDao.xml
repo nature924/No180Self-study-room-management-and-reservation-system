@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZixishiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.zixishi_name as zixishiName
+        ,a.zixishi_photo as zixishiPhoto
+        ,a.zixishi_types as zixishiTypes
+        ,a.zuowei_number as zuoweiNumber
+        ,a.zan_number as zanNumber
+        ,a.cai_number as caiNumber
+        ,a.zixishi_delete as zixishiDelete
+        ,a.zixishi_content as zixishiContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZixishiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM zixishi  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.zixishiName != '' and params.zixishiName != null and params.zixishiName != 'null' ">
+                and a.zixishi_name like CONCAT('%',#{params.zixishiName},'%')
+            </if>
+            <if test="params.zixishiTypes != null and params.zixishiTypes != ''">
+                and a.zixishi_types = #{params.zixishiTypes}
+            </if>
+            <if test="params.zuoweiNumberStart != null and params.zuoweiNumberStart != ''">
+                <![CDATA[  and a.zuowei_number >= #{params.zuoweiNumberStart}   ]]>
+            </if>
+            <if test="params.zuoweiNumberEnd != null and params.zuoweiNumberEnd != ''">
+                <![CDATA[  and a.zuowei_number <= #{params.zuoweiNumberEnd}   ]]>
+            </if>
+             <if test="params.zuoweiNumber != null and params.zuoweiNumber != ''">
+                and a.zuowei_number = #{params.zuoweiNumber}
+             </if>
+            <if test="params.zanNumberStart != null and params.zanNumberStart != ''">
+                <![CDATA[  and a.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null and params.zanNumberEnd != ''">
+                <![CDATA[  and a.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+             <if test="params.zanNumber != null and params.zanNumber != ''">
+                and a.zan_number = #{params.zanNumber}
+             </if>
+            <if test="params.caiNumberStart != null and params.caiNumberStart != ''">
+                <![CDATA[  and a.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null and params.caiNumberEnd != ''">
+                <![CDATA[  and a.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+             <if test="params.caiNumber != null and params.caiNumber != ''">
+                and a.cai_number = #{params.caiNumber}
+             </if>
+            <if test="params.zixishiDeleteStart != null and params.zixishiDeleteStart != ''">
+                <![CDATA[  and a.zixishi_delete >= #{params.zixishiDeleteStart}   ]]>
+            </if>
+            <if test="params.zixishiDeleteEnd != null and params.zixishiDeleteEnd != ''">
+                <![CDATA[  and a.zixishi_delete <= #{params.zixishiDeleteEnd}   ]]>
+            </if>
+             <if test="params.zixishiDelete != null and params.zixishiDelete != ''">
+                and a.zixishi_delete = #{params.zixishiDelete}
+             </if>
+            <if test=" params.zixishiContent != '' and params.zixishiContent != null and params.zixishiContent != 'null' ">
+                and a.zixishi_content like CONCAT('%',#{params.zixishiContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

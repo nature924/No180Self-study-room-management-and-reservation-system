@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ZixishiCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.zixishi_id as zixishiId
+        ,a.yonghu_id as yonghuId
+        ,a.zixishi_collection_types as zixishiCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ZixishiCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_delete as yonghuDelete
+        ,zixishi.zixishi_name as zixishiName
+        ,zixishi.zixishi_photo as zixishiPhoto
+        ,zixishi.zixishi_types as zixishiTypes
+        ,zixishi.zuowei_number as zuoweiNumber
+        ,zixishi.zan_number as zanNumber
+        ,zixishi.cai_number as caiNumber
+        ,zixishi.zixishi_delete as zixishiDelete
+        ,zixishi.zixishi_content as zixishiContent
+
+        FROM zixishi_collection  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+        left JOIN zixishi zixishi ON a.zixishi_id = zixishi.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.zixishiId != null and params.zixishiId != ''">
+                and (
+                    a.zixishi_id = #{params.zixishiId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.zixishiCollectionTypes != null and params.zixishiCollectionTypes != ''">
+                and a.zixishi_collection_types = #{params.zixishiCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test="params.yonghuDeleteStart != null  and params.yonghuDeleteStart != '' ">
+                <![CDATA[  and yonghu.yonghu_delete >= #{params.yonghuDeleteStart}   ]]>
+            </if>
+            <if test="params.yonghuDeleteEnd != null  and params.yonghuDeleteEnd != '' ">
+                <![CDATA[  and yonghu.yonghu_delete <= #{params.yonghuDeleteEnd}   ]]>
+            </if>
+            <if test="params.yonghuDelete != null  and params.yonghuDelete != '' ">
+                and yonghu.yonghu_delete = #{params.yonghuDelete}
+            </if>
+                <!-- 判断自习室信息的id不为空 -->
+            <if test=" params.zixishiIdNotNull != '' and params.zixishiIdNotNull != null and params.zixishiIdNotNull != 'null' ">
+                and a.zixishi_id IS NOT NULL
+            </if>
+            <if test=" params.zixishiName != '' and params.zixishiName != null and params.zixishiName != 'null' ">
+                and zixishi.zixishi_name like CONCAT('%',#{params.zixishiName},'%')
+            </if>
+            <if test="params.zixishiTypes != null  and params.zixishiTypes != ''">
+                and zixishi.zixishi_types = #{params.zixishiTypes}
+            </if>
+
+            <if test="params.zuoweiNumberStart != null  and params.zuoweiNumberStart != '' ">
+                <![CDATA[  and zixishi.zuowei_number >= #{params.zuoweiNumberStart}   ]]>
+            </if>
+            <if test="params.zuoweiNumberEnd != null  and params.zuoweiNumberEnd != '' ">
+                <![CDATA[  and zixishi.zuowei_number <= #{params.zuoweiNumberEnd}   ]]>
+            </if>
+            <if test="params.zuoweiNumber != null  and params.zuoweiNumber != '' ">
+                and zixishi.zuowei_number = #{params.zuoweiNumber}
+            </if>
+            <if test="params.zanNumberStart != null  and params.zanNumberStart != '' ">
+                <![CDATA[  and zixishi.zan_number >= #{params.zanNumberStart}   ]]>
+            </if>
+            <if test="params.zanNumberEnd != null  and params.zanNumberEnd != '' ">
+                <![CDATA[  and zixishi.zan_number <= #{params.zanNumberEnd}   ]]>
+            </if>
+            <if test="params.zanNumber != null  and params.zanNumber != '' ">
+                and zixishi.zan_number = #{params.zanNumber}
+            </if>
+            <if test="params.caiNumberStart != null  and params.caiNumberStart != '' ">
+                <![CDATA[  and zixishi.cai_number >= #{params.caiNumberStart}   ]]>
+            </if>
+            <if test="params.caiNumberEnd != null  and params.caiNumberEnd != '' ">
+                <![CDATA[  and zixishi.cai_number <= #{params.caiNumberEnd}   ]]>
+            </if>
+            <if test="params.caiNumber != null  and params.caiNumber != '' ">
+                and zixishi.cai_number = #{params.caiNumber}
+            </if>
+            <if test="params.zixishiDeleteStart != null  and params.zixishiDeleteStart != '' ">
+                <![CDATA[  and zixishi.zixishi_delete >= #{params.zixishiDeleteStart}   ]]>
+            </if>
+            <if test="params.zixishiDeleteEnd != null  and params.zixishiDeleteEnd != '' ">
+                <![CDATA[  and zixishi.zixishi_delete <= #{params.zixishiDeleteEnd}   ]]>
+            </if>
+            <if test="params.zixishiDelete != null  and params.zixishiDelete != '' ">
+                and zixishi.zixishi_delete = #{params.zixishiDelete}
+            </if>
+            <if test=" params.zixishiContent != '' and params.zixishiContent != null and params.zixishiContent != 'null' ">
+                and zixishi.zixishi_content like CONCAT('%',#{params.zixishiContent},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
