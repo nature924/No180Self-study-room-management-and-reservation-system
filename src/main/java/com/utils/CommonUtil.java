@@ -48,5 +48,13 @@ public class CommonUtil {
         if(limit){params.put("limit","10");}
         if(sort){params.put("sort","id");}
         if(order){params.put("order","desc");}
+        Object sortVal = params.get("sort");
+        if(sortVal == null || !sortVal.toString().matches("[a-zA-Z0-9_]+")){
+            params.put("sort","id");
+        }
+        Object orderVal = params.get("order");
+        if(orderVal == null || !("asc".equalsIgnoreCase(orderVal.toString()) || "desc".equalsIgnoreCase(orderVal.toString()))){
+            params.put("order","desc");
+        }
     }
 }
